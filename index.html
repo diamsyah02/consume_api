@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Covid19 | Consume Api JavaScript</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+</head>
+<body onload="onInit()">
+    <div class="container pt-4">
+        <div class="jumbotron bg-info text-center text-light">
+            <h1>Data Covid19</h1>
+            <p>Consume Api JavaScript Murni</p>
+            <p>Data ini di ambil dari : https://api.kawalcorona.com/</p>
+        </div>
+        <div class="pb-3">
+            <b>Total kasus se-dunia</b>
+            <div class="pt-3" id="terkonfirmasi">
+
+            </div>
+            <div class="pt-4" id="sembuh">
+
+            </div>
+            <div class="pt-4" id="meninggal">
+
+            </div>
+        </div>
+        <div class="table table-responsive">
+            <table class="table table-bordered">
+                <thead class="bg-info text-light">
+                    <tr>
+                        <th>Urutan</th>
+                        <th>Negara</th>
+                        <th>Terkonfirmasi</th>
+                        <th>Sembuh</th>
+                        <th>Meninggal</th>
+                    </tr>
+                </thead>
+                <tbody id="isi_table">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        // function/fungsi yang jalan ketika browser di load
+        function onInit(){
+            // jalankan function/fungsi ambil data covid19
+            getDataCovid();
+        }
+
+        // function/fungsi untuk mengambil data covid19
+        async function getDataCovid(){
+            // tembak url rest api covid19 lalu simpan response nya di variable data
+            let data = await fetch('https://api.kawalcorona.com/');
+
+            // kemudian ubah response kedalam bentuk json lalu simpan di variable response
+            let response = await data.json();
+            
+            // buat variable dataCovid, terkonfirmasi, sembuh, meninggal
+            let dataCovid = '';
+            let terkonfirmasi = null;
+            let sembuh = null;
+            let meninggal = null;
+
+            // looping response yang sudah di convert kedalam bentuk json
+            response.forEach(function(data, index){
+                dataCovid +=    '<tr>'+
+                                '<td align="center">'+Number(index+1)+'.</td>'+
+                                '<td>'+data.attributes.Country_Region+'</td>'+
+                                '<td>'+data.attributes.Confirmed.toLocaleString('ID')+'</td>'+
+                                '<td>'+data.attributes.Recovered.toLocaleString('ID')+'</td>'+
+                                '<td>'+data.attributes.Deaths.toLocaleString('ID')+'</td>'+
+                                '</tr>';
+                terkonfirmasi +=    Number(data.attributes.Confirmed);
+                sembuh +=    Number(data.attributes.Recovered);
+                meninggal +=    Number(data.attributes.Deaths);
+            });
+            // suntikkan data dalam variable terkonfirmasi ke dalam tag html dengan properti id="terkonfirmasi", tambahkan sedikit html agar terlihat bagus
+            document.getElementById('terkonfirmasi').innerHTML = 'Terkonfirmasi : <span class="badge badge-primary pt-2 pb-2">'+terkonfirmasi.toLocaleString('ID')+'</span>';
+
+            // suntikkan data dalam variable sembuh ke dalam tag html dengan properti id="sembuh", tambahkan sedikit html agar terlihat bagus
+            document.getElementById('sembuh').innerHTML = 'Sembuh : <span class="badge badge-success pt-2 pb-2">'+sembuh.toLocaleString('ID')+'</span>';
+
+            // suntikkan data dalam variable meninggal ke dalam tag html dengan properti id="meninggal", tambahkan sedikit html agar terlihat bagus
+            document.getElementById('meninggal').innerHTML = 'Meninggal : <span class="badge badge-danger pt-2 pb-2">'+meninggal.toLocaleString('ID')+'</span>';
+
+            // suntikkan data dalam variable dataCovid ke dalam tag html dengan properti id="isi_table"
+            document.getElementById('isi_table').innerHTML = dataCovid;
+        }
+    </script>
+</body>
+</html>
